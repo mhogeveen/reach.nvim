@@ -40,10 +40,10 @@ end
 
 local Picker = {}
 
-function Picker:new(entries)
+function Picker:new(entries, options)
   local o = {}
 
-  o._display = Display:new()
+  o._display = Display:new(options)
   o.ctx = {}
   o.entries = entries
   o._num_cols = 0

@@ -33,16 +33,13 @@ end
 
 local Display = {}
 
-function Display:new()
+function Display:new(options)
   local o = {}
-  self.config = {
+  self.config = vim.tbl_deep_extend('force', options, {
     relative = 'editor',
     style = 'minimal',
-    border = 'rounded',
     focusable = false,
-    title = ' Reach ',
-    title_pos = 'center',
-  }
+  })
   self.__index = self
   return setmetatable(o, self)
 end

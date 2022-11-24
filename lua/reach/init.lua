@@ -53,7 +53,7 @@ function module.buffers(options)
     })
   end, bufs)
 
-  local picker = Picker:new(entries)
+  local picker = Picker:new(entries, options.window)
 
   local max_handle_length = 0
   local marker_present = false

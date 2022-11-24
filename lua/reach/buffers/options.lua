@@ -18,6 +18,11 @@ local default = {
   grayout = true,
   auto_handles = require('reach.buffers.constant').auto_handles,
   auto_exclude_handles = {},
+  window = {
+    border = 'single',
+    title = '',
+    title_pos = 'left',
+  },
   previous = {
     enable = true,
     depth = 2,
@@ -66,6 +71,7 @@ local function validate(options)
   })
 
   if options then
+    local window = options.window
     local previous = options.previous
     local actions = options.actions
 
@@ -89,7 +95,16 @@ local function validate(options)
       },
       previous = { previous, 'table', true },
       actions = { actions, 'table', true },
+      window = { window, 'table', true },
     })
+
+    if window then
+      vim.validate({
+        border = { window.border, optional(one_of({ 'none', 'single', 'double', 'rounded', 'solid', 'shadow' })), true },
+        title = { window.title, 'string', true },
+        title_pos = { window.title_pos, optional(one_of({ 'left', 'center', 'right' })), true },
+      })
+    end
 
     if previous then
       vim.validate({
