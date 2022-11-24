@@ -38,8 +38,10 @@ function Display:new()
   self.config = {
     relative = 'editor',
     style = 'minimal',
-    border = 'single',
+    border = 'rounded',
     focusable = false,
+    title = ' Reach ',
+    title_pos = 'center',
   }
   self.__index = self
   return setmetatable(o, self)
@@ -58,6 +60,7 @@ function Display:render(view, options)
     height = height,
     row = (vim.o.lines - height) / 2,
     col = (vim.o.columns - width) / 2,
+    border = 'rounded',
   }, options)
 
   buf_set_lines(self.bufnr, 0, -1, false, lines)
