@@ -6,9 +6,19 @@ local config = require('reach.config')
 local helpers = require('reach.helpers')
 local highlights = require('reach.highlights')
 local util = require('reach.util')
+local buffer_util = require('reach.buffers.util')
+
 local notify = helpers.notify
+
 local buffers = require('reach.buffers')
+local marks = require('reach.marks')
+local tabpages = require('reach.tabpages')
+local colorschemes = require('reach.colorschemes')
+
 local make_buffers = require('reach.buffers.make_buffers')
+local make_marks = require('reach.marks.make_marks')
+local make_tabpages = require('reach.tabpages.make_tabpages')
+local make_colorschemes = require('reach.colorschemes.make_colorschemes')
 
 local module = {}
 
@@ -72,6 +82,86 @@ function module.buffers(options)
   }
 
   machine:init()
+end
+
+function module.marks(options)
+  options = marks.options.extend(options)
+
+  local mrks = make_marks(options)
+
+  if #mrks == 0 then
+    vim.api.nvim_command('redraw')
+    return notify('No marks')
+  end
+
+  local machine = Machine:new(marks.machine)
+
+  local entries = vim.tbl_map(function(mark)
+    return Entry:new({
+      component = marks.component,
+      data = mark,
+    })
+  end, mrks)
+
+  machine.ctx = {
+    picker = Picker:new(entries),
+    options = options,
+  }
+
+  machine:init()
+end
+
+function module.tabpages(options)
+  options = tabpages.options.extend(options)
+
+  local tabs = make_tabpages(options)
+
+  if not options.show_current and #tabs < 2 then
+    return notify('Only one tab')
+  end
+
+  local machine = Machine:new(tabpages.machine)
+
+  local entries = vim.tbl_map(function(tabpage)
+    return Entry:new({
+      component = tabpages.component,
+      data = tabpage,
+    })
+  end, tabs)
+
+  machine.ctx = {
+    picker = Picker:new(entries),
+    options = options,
+  }
+
+  machine:init()
+end
+
+function module.colorschemes(options)
+  options = colorschemes.options.extend(options)
+
+  local machine = Machine:new(colorschemes.machine)
+
+  local entries = vim.tbl_map(function(colorscheme)
+    return Entry:new({
+      component = colorschemes.component,
+      data = colorscheme,
+    })
+  end, make_colorschemes(options))
+
+  machine.ctx = {
+    picker = Picker:new(entries),
+    options = options,
+  }
+
+  machine:init()
+end
+
+function module.switch_to_buffer(n, options)
+  local bufs = make_buffers(buffers.options.extend(options))
+  if bufs[n] then
+    buffer_util.switch_buf(bufs[n])
+  end
 end
 
 return module
